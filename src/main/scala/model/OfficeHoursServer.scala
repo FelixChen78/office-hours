@@ -64,6 +64,20 @@ class EnterQueueListener(server: OfficeHoursServer) extends DataListener[String]
     server.socketToUsername += (socket -> username)
     server.usernameToSocket += (username -> socket)
     server.server.getBroadcastOperations.sendEvent("queue", server.queueJSON())
+
+
+    var numStudent: Int = 0
+    val q = server.database.getQueue
+
+    for (_<- q) {
+      numStudent += 1
+    }
+
+    val waitTime: Double = numStudent * 10.0 // wait time is CurStudents in queue * 10 minutes
+    val msg = waitTime.toString + "more minutes"
+    server.usernameToSocket(username).sendEvent("message", msg)
+
+
   }
 }
 
